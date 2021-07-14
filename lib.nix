@@ -11,7 +11,9 @@ let
 
   lib = {
     inherit
-      defaultSystems;
+      defaultSystems
+      forAllSystems
+    ;
   };
 in
   lib

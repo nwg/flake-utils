@@ -1,7 +1,7 @@
 {
   description = "My nixpkgs utils";
 
-  outputs = { self, ... }: {
-    lib = import ./lib.nix;
+  outputs = { self, nixpkgs }: {
+    lib = import ./lib.nix { lib = nixpkgs.lib; };
   };
 }

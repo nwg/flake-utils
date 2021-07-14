@@ -9,11 +9,11 @@ let
 
   forAllSystems = f: lib.genAttrs defaultSystems (system: f system);
 
-  lib = {
+  nwgLib = {
     inherit
       defaultSystems
       forAllSystems
     ;
   };
 in
-  lib
+  nwgLib

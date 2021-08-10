@@ -1,19 +1,14 @@
-{ lib }:
+{ nixpkgs, numtide-flake-utils }:
 let
-  defaultSystems = [
-    "aarch64-linux"
-    "i686-linux"
-    "x86_64-darwin"
-    "x86_64-linux"
-  ];
+  lib = nixpkgs.lib;
+  numtide = numtide-flake-utils.lib;
+  defaultSystems = numtide.defaultSystems;
+  allSystems = numtide.allSystems;
 
-  forAllSystems = f: lib.genAttrs defaultSystems (system: f system);
+  forSystems = systems: f: lib.genAttrs systems (system: f system);
+  forDefaultSystems = forSystems defaultSystems;
+  forAllSystems = forSystems allSystems;
 
-  nwgLib = {
-    inherit
-      defaultSystems
-      forAllSystems
-    ;
-  };
-in
-  nwgLib
+in {
+  inherit defaultSystems allSystems numtide forSystems forDefaultSystems forAllSystems;
+}

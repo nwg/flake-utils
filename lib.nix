@@ -11,7 +11,7 @@ let
 
   # `nix flake check` is picky about overlay function arg names actually being final and prev
   composeOverlays = e1: e2: final: prev: lib.composeExtensions e1 e2;
-  composeManyOverlays = e1: e2: final: prev: lib.composeManyExtensions e1 e2;
+  composeManyOverlays = e1: e2: final: prev: lib.composeManyExtensions [ e1 e2 ];
 
 in {
   inherit

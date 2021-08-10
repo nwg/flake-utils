@@ -14,5 +14,13 @@ let
   composeManyOverlays = lib.foldr (x: y: composeOverlays x y);
 
 in {
-  inherit defaultSystems allSystems numtide forSystems forDefaultSystems forAllSystems;
+  inherit
+    defaultSystems
+    allSystems
+    numtide
+    forSystems
+    forDefaultSystems
+    forAllSystems
+    composeOverlays
+    composeManyOverlays;
 }

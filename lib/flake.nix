@@ -42,7 +42,6 @@ in {
     isOS
     defaultSystems
     supportedSystems
-    promoteAttrsPathIndex
     composeOverlays
     composeManyOverlays;
 }

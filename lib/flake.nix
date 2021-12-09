@@ -3,8 +3,6 @@ let
   defaultSystems = lib.systems.supported.hydra;
   isOS = os: system: (lib.last (lib.splitString "-" system)) == os;
   isLinux = isOS "linux";
-  justLinux = lib.filter isLinux;
-  linuxSystems = justLinux allSystems;
   stdenvSystems = [
     "i686-linux"
     "x86_64-linux"
@@ -30,7 +28,6 @@ let
     "x86_64-cygwin"
     "x86_64-freebsd"
   ];
-  stdenvLinuxSystems = justLinux stdenvSystems;
 
   # `nix flake check` is picky about overlay function arg names actually being final and prev
   composeOverlays = e1: e2: final: prev: ((lib.composeExtensions e1 e2) final prev);
@@ -41,7 +38,8 @@ in {
     isLinux
     isOS
     defaultSystems
-    supportedSystems
+    stdenvSystems
     composeOverlays
-    composeManyOverlays;
+    composeManyOverlays
+    ;
 }

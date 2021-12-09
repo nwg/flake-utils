@@ -4,8 +4,8 @@ let
   numtide = numtide-flake-utils.lib;
   defaultSystems = numtide.defaultSystems;
   allSystems = numtide.allSystems;
+  supportedSystems = nixpkgs.lib.systems.supported.hydra;
   isOS = os: system: (lib.last (lib.splitString "-" system)) == os;
-#isLinux = (system: !((builtins.match "[^-]+-linux" system) == null));
   isLinux = isOS "linux";
   justLinux = lib.filter isLinux;
   linuxSystems = justLinux allSystems;
@@ -41,7 +41,26 @@ let
     "armv7a-linux"
     "armv7l-linux"
     "aarch64-linux"
+    "aarch64-darwin"
   ];
+
+  inherit (builtins) elemAt;
+  inherit (lib) sublist drop;
+
+  listMakeMajor = n: lst: [ (elemAt lst n) ]
+                            ++ sublist 0 n lst
+                            ++ drop (n + 1) lst;
+
+  mapAttrPaths = f: set:
+    let
+      pvPairsAttr = lib.mapAttrsRecursive (path: value: { inherit path value; }) set;
+      pvPairsList = lib.collect (x: x ? path) pvPairsAttr;
+      mapped = map (e: (e // { path = f e.path; })) pvPairsList;
+      attrsList = map (e: (lib.setAttrByPath e.path e.value)) mapped;
+    in
+      lib.foldr lib.recursiveUpdate {} attrsList;
+
+  promoteAttrsPathIndex = n: mapAttrPaths (listMakeMajor n);
 
   forSystems = systems: f: lib.genAttrs systems (system: f system);
   forDefaultSystems = forSystems defaultSystems;
@@ -50,6 +69,7 @@ let
   forStdenvSystems = forSystems stdenvSystems;
   forStdenvLinuxSystems = forSystems stdenvLinuxSystems;
   forNixosSystems = forSystems nixosSystems;
+  forSupportedSystems = forSystems supportedSystems;
 
   # `nix flake check` is picky about overlay function arg names actually being final and prev
   composeOverlays = e1: e2: final: prev: ((lib.composeExtensions e1 e2) final prev);
@@ -61,6 +81,7 @@ in {
     isOS
     defaultSystems
     allSystems
+    supportedSystems
     numtide
     forSystems
     forDefaultSystems
@@ -69,6 +90,8 @@ in {
     forStdenvSystems
     forStdenvLinuxSystems
     forNixosSystems
+    forSupportedSystems
+    promoteAttrsPathIndex
     composeOverlays
     composeManyOverlays;
 }
